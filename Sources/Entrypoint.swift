@@ -1,3 +1,5 @@
+import Foundation
+
 import ArgumentParser
 
 
@@ -10,8 +12,16 @@ struct S3Uploader: AsyncParsableCommand {
         guard paths.count == 2 else {
             throw ValidationError("Must have exactly 2 arguments: <input path> <S3 path>")
         }
-        let inputPath = paths[0]
-        let s3Path = paths[1]
-        print(inputPath, "->", s3Path)
+
+        try await fetch()
+    }
+
+    func fetch() async throws {
+        let url = "https://raw.githubusercontent.com/finestructure/s3-uploader/main/Package.swift"
+        print("Fetching \(url)...")
+
+        let (data, _) = try await URLSession.shared.data(from: URL(string: url)!)
+        print("Received:")
+        print(String(decoding: data, as: UTF8.self))
     }
 }
